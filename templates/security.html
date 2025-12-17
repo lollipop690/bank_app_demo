@@ -1,0 +1,11 @@
+{% extends 'base.html'%}
+{% block content %}
+<h2>Security Assets</h2>
+<p>hello {{nameID}}, this is your Securities you have</p>
+<button type="button" onclick="backHomepage()">Return</button></p>
+<script>
+function backHomepage() {
+  location.replace("http://127.0.0.1:5000/homepage/{{nameID}}")
+}
+</script>
+{% endblock %}

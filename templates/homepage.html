@@ -1,0 +1,25 @@
+{% extends 'base.html'%}
+{% block content %}
+<h2>Homepage, Welcome {{nameID}}!</h2>
+  <p>Click here to access Cash Assets: <br>
+<button type="button" onclick="redirectCash()">Edit Cash</button></p>
+<script>
+function redirectCash() {
+  location.replace("http://127.0.0.1:5000/cash/{{nameID}}")
+}
+</script>
+
+  <p>Click here to access Securities: <br>
+<button type="button" onclick="redirectSecurity()">Edit Securities</button></p>
+<script>
+function redirectSecurity() {
+  location.replace("http://127.0.0.1:5000/securities/{{nameID}}")
+}</script>
+<p>
+<button type="button" onclick="LogOut()">Log Out</button></p>
+<script>
+function LogOut() {
+  location.replace("http://127.0.0.1:5000/logout")
+}
+</script>
+{% endblock %}

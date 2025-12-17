@@ -1,0 +1,26 @@
+{% extends 'base.html'%}
+{% block content %}
+<h2>Cash Assets</h2>
+<p>hello {{nameID}}, this is the Cash Assets you have</p>
+<button type="button" onclick="backHomepage()">Return</button>
+<button type="button" onclick="editCash()">Edit Values</button></p>
+<script>
+function backHomepage() {
+  location.replace("http://127.0.0.1:5000/homepage/{{nameID}}")
+}
+function editCash() {
+  location.replace("http://127.0.0.1:5000/cash/{{nameID}}/edit")
+}
+</script>
+<form action="/cash/{{nameID}}" method="POST">
+  <p>{{form.name.label}}<br>
+  {{form.name}}</p>
+  <p>{{form.value.label}}<br>
+  {{form.value}}</p>
+  <p>{{form.submit()}}</p>
+</form>
+<body>
+  <hl> Assets </hl>
+  {{table|safe}}
+</body>
+{% endblock %}
