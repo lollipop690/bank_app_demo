@@ -6,7 +6,6 @@ from flask_smorest import Api
 from flask_jwt_extended import JWTManager
 from flask_login import LoginManager
 import secrets
-from models.blocklist import BlockList
 from resources.user_blp import blp as UserBLP
 from resources.cash_blp import blp as CashBLP
 from resources.security_blp import blp as SecurityBLP

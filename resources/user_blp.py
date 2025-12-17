@@ -2,7 +2,6 @@ from flask import Flask, request, render_template,url_for,redirect,flash,session
 from flask_login import login_required,logout_user,login_user,current_user
 from flask.views import MethodView
 from models.user_model import UserModel
-from models.blocklist import BlockList
 from models.cash_model import CashModel
 from models.security_model import SecurityModel
 from passlib.hash import pbkdf2_sha256
