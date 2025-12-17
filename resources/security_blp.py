@@ -15,4 +15,5 @@ blp=Blueprint("security",__name__,'security instruments')
 @blp.route('/securities/<username>',methods=['GET','POST'])
 class SecAcc(MethodView):
     def get(self,username):
+        print("not ready yet!")
         return render_template('security.html',nameID=username)
