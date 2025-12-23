@@ -1,1 +1,1 @@
-from forms.form import RegistrationForm,LoginForm,CashForm
+from forms.form import RegistrationForm,LoginForm,CashForm,EditCashForm

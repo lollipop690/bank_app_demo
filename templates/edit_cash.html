@@ -2,17 +2,19 @@
 {% block content %}
 <h2>Cash Assets</h2>
 <p>hello {{nameID}}, this is the Cash Assets you have</p>
-<button type="button" onclick="backHomepage()">Return</button>
-<button type="button" onclick="editCash()">Edit Values</button></p>
+<button type="button" onclick="backHomepage()">Return Home</button>
+<button type="button" onclick="Cash()">Return Cash</button></p>
 <script>
 function backHomepage() {
   location.replace("http://127.0.0.1:5000/homepage/{{nameID}}")
 }
-function editCash() {
-  location.replace("http://127.0.0.1:5000/cash/{{nameID}}/edit")
+function Cash() {
+  location.replace("http://127.0.0.1:5000/cash/{{nameID}}")
 }
 </script>
-<form action="/cash/{{nameID}}" method="POST">
+<form action="/cash/{{nameID}}/edit" method="POST">
+  <p>{{form.id.label}}<br>
+  {{form.id}}</p>
   <p>{{form.name.label}}<br>
   {{form.name}}</p>
   <p>{{form.value.label}}<br>

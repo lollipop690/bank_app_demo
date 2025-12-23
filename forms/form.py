@@ -17,6 +17,12 @@ class CashForm(FlaskForm):
     value=StringField('Value of asset: ')
     submit=SubmitField('Submit')
 
+class EditCashForm(FlaskForm):
+    id=StringField('ID to edit: ')
+    name=StringField('Edit name: ')
+    value=StringField('Edit value: ')
+    submit=SubmitField('Submit')
+
 class SecurityForm(FlaskForm):
     ticker=StringField('Ticker: ')
     units=StringField('Units: ')
