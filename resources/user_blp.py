@@ -7,7 +7,6 @@ from models.security_model import SecurityModel
 from passlib.hash import pbkdf2_sha256
 from db import db
 from flask_smorest import abort,Blueprint
-from schemas import PlainUserSchema
 from sqlalchemy.exc import SQLAlchemyError,IntegrityError
 from flask_jwt_extended import JWTManager,jwt_required,get_jwt,create_access_token,get_jwt_identity,create_refresh_token
 import forms
