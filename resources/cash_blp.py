@@ -57,7 +57,7 @@ class CashAcc(MethodView):
             return redirect('/cash/{}'.format(current_user.username))
 
 
-@blp.route('/cash/<username>/edit',methods=['GET','PUT'])
+@blp.route('/cash/<username>/edit',methods=['GET','PUT','POST'])
 class CashAcc(MethodView):    
     @login_required
     def get(self,username):
@@ -75,35 +75,49 @@ class CashAcc(MethodView):
             return redirect('/cash/{}/edit'.format(current_user.username))
 
     @login_required
+    def post(self,username):
+        if request.form.get('_method')=='PUT':
+            print('put')
+            return self.put(username)
+        else:
+            return {'error':'method not allowed! 405'}
+    
+    @login_required
     def put(self,username):
         if current_user.username==username:
             form_data=request.form
-            cash_id=form_data['id_edit']
-            cash=CashModel.query.filter_by(CashModel.id==cash_id,CashModel.user_id==username)
+            cash_id=form_data['edit_id']
+            print("input id:",cash_id)
+            cash=CashModel.query.filter(CashModel.id==cash_id,CashModel.user_id==username).first()
+            print('cash obj:',cash)
+            #print(cash.name)
             if cash:
                 original_name=cash.name
                 original_value=cash.value
                 new_name=form_data['name']
-                try:
-                    new_value=float(form_data['value'])
-                except ValueError:
-                    print("input numbers only!")
-                    return redirect('/cash/{}/edit'.format(current_user.username))
+                new_value=form_data['value']
                 #new cash name
                 if new_name=='':
-                    new_name==original_name
+                    new_name=original_name
                 
                 #new cash value
                 if new_value=='':
                     new_value=original_value
-                
-                cash=CashModel(id=cash_id,name=new_name,value=new_value,user_id=username)
+                else:
+                    try:
+                        new_value=float(new_value)
+                    except ValueError:
+                        print("input numbers only!")
+                        return redirect('/cash/{}/edit'.format(current_user.username))                
+                cash.name=new_name
+                cash.value=new_value
             else:
                 print('id not found!')
                 return redirect('/cash/{}/edit'.format(current_user.username))
             try:
                 db.session.add(cash)
                 db.session.commit()
+                return redirect('/cash/{}/edit'.format(current_user.username))
             except SQLAlchemyError as e:
                 abort(401,message='Input Error!')
         else:

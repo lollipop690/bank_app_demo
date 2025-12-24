@@ -18,7 +18,7 @@ class CashForm(FlaskForm):
     submit=SubmitField('Submit')
 
 class EditCashForm(FlaskForm):
-    id=StringField('ID to edit: ')
+    edit_id=StringField('ID to edit: ')
     name=StringField('Edit name: ')
     value=StringField('Edit value: ')
     submit=SubmitField('Submit')

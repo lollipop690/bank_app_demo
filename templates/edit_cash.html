@@ -13,8 +13,9 @@ function Cash() {
 }
 </script>
 <form action="/cash/{{nameID}}/edit" method="POST">
-  <p>{{form.id.label}}<br>
-  {{form.id}}</p>
+  <input type="hidden" name="_method" value="PUT" />
+  <p>{{form.edit_id.label}}<br>
+  {{form.edit_id}}</p>
   <p>{{form.name.label}}<br>
   {{form.name}}</p>
   <p>{{form.value.label}}<br>
