@@ -57,12 +57,13 @@ class CashAcc(MethodView):
             return redirect('/cash/{}'.format(current_user.username))
 
 
-@blp.route('/cash/<username>/edit',methods=['GET','PUT','POST'])
+@blp.route('/cash/<username>/edit',methods=['GET','PUT','DEL','POST'])
 class CashAcc(MethodView):    
     @login_required
     def get(self,username):
         if current_user.username==username:
-            form=forms.EditCashForm()
+            form_edit=forms.EditCashForm()
+            form_del=forms.DelCashForm()
             cash_data=CashModel.query.filter(CashModel.user_id==username)
             cash_name=[cash.name for cash in cash_data]
             cash_value=[cash.value for cash in cash_data]
@@ -70,18 +71,21 @@ class CashAcc(MethodView):
             data_dict={'ID':cash_id,'Account Name':cash_name,'Value':cash_value}
             df=pd.DataFrame(data_dict)
             df_html=df.to_html(classes='table',index=False)
-            return render_template('edit_cash.html',nameID=username,form=form,table=df_html)
+            return render_template('edit_cash.html',nameID=username,form_edit=form_edit,form_del=form_del,table=df_html)
         else:
             return redirect('/cash/{}/edit'.format(current_user.username))
 
     @login_required
     def post(self,username):
-        if request.form.get('_method')=='PUT':
+        if request.form.get('_edit')=='PUT': #request.form.get gets the values of the 
             print('put')
             return self.put(username)
+        elif request.form.get('_delete')=='DEL':
+            print('del')
+            return self.delete(username)
         else:
             return {'error':'method not allowed! 405'}
-    
+        
     @login_required
     def put(self,username):
         if current_user.username==username:
@@ -122,3 +126,20 @@ class CashAcc(MethodView):
                 abort(401,message='Input Error!')
         else:
             return redirect('/cash/{}/edit'.format(current_user.username))
+    
+    @login_required
+    def delete(self,username):
+        if current_user.username==username:
+            form_data=request.form
+            cash_id=form_data['del_id']
+            cash=CashModel.query.filter(CashModel.id==cash_id,CashModel.user_id==username).first()
+            try:
+                db.session.delete(cash)
+                db.session.commit()
+                print('Deleted successfully!')
+                return redirect('/cash/{}/edit'.format(current_user.username))
+            except SQLAlchemyError as e:
+                print('ID does not exist!')
+                return redirect('/cash/{}/edit'.format(current_user.username))
+
+

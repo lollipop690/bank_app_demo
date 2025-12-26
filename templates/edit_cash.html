@@ -13,14 +13,20 @@ function Cash() {
 }
 </script>
 <form action="/cash/{{nameID}}/edit" method="POST">
-  <input type="hidden" name="_method" value="PUT" />
-  <p>{{form.edit_id.label}}<br>
-  {{form.edit_id}}</p>
-  <p>{{form.name.label}}<br>
-  {{form.name}}</p>
-  <p>{{form.value.label}}<br>
-  {{form.value}}</p>
-  <p>{{form.submit()}}</p>
+  <input type="hidden" name="_edit" value="PUT" />
+  <p>{{form_edit.edit_id.label}}<br>
+  {{form_edit.edit_id}}</p>
+  <p>{{form_edit.name.label}}<br>
+  {{form_edit.name}}</p>
+  <p>{{form_edit.value.label}}<br>
+  {{form_edit.value}}</p>
+  <p>{{form_edit.submit()}}</p>
+</form>
+<form action="/cash/{{nameID}}/edit" method="POST">
+  <input type="hidden" name="_delete" value="DEL" />
+  <p>{{form_del.del_id.label}}<br>
+  {{form_del.del_id}}</p>
+  <p>{{form_del.delete()}}</p>
 </form>
 <body>
   <hl> Assets </hl>

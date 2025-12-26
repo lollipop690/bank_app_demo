@@ -23,6 +23,10 @@ class EditCashForm(FlaskForm):
     value=StringField('Edit value: ')
     submit=SubmitField('Submit')
 
+class DelCashForm(FlaskForm):
+    del_id=StringField('ID to delete: ')
+    delete=SubmitField('Delete')
+
 class SecurityForm(FlaskForm):
     ticker=StringField('Ticker: ')
     units=StringField('Units: ')
