@@ -35,6 +35,20 @@ class SecAcc(MethodView):
     def post(self,username):
         if current_user.username==username:
             form_data=request.form
-            
+            ticker=form_data['ticker']
+            try:
+                units=float(form_data['units'])
+            except ValueError:
+                print("Must be in numbers!")
+                return redirect('/securities/{}'.format(current_user.username))
+            security=SecurityModel(ticker=ticker,units=units,user_id=username)
+            try:
+                db.session.add(security)
+                db.session.commit()
+                print('added!')
+                return redirect('/securities/{}'.format(current_user.username))
+            except SQLAlchemyError:
+                print('Ticker already exist!')
+                return redirect('/securities/{}'.format(current_user.username))
         else:
             return redirect('/securities/{}'.format(current_user.username))
