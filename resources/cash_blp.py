@@ -93,13 +93,18 @@ class CashAcc(MethodView):
             cash_id=form_data['edit_id']
             print("input id:",cash_id)
             cash=CashModel.query.filter(CashModel.id==cash_id,CashModel.user_id==username).first()
-            print('cash obj:',cash)
-            #print(cash.name)
+            #Alternative
+            '''
+            user=UserModel.query.filter(UserModel.username==username).first()
+            cash_obj=user.cash
+            cash=cash_obj.filter(CashModel.id==cash_id).first()
+            '''
             if cash:
                 original_name=cash.name
                 original_value=cash.value
                 new_name=form_data['name']
                 new_value=form_data['value']
+                
                 #new cash name
                 if new_name=='':
                     new_name=original_name

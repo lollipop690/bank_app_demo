@@ -11,9 +11,7 @@ from sqlalchemy.exc import SQLAlchemyError,IntegrityError
 from flask_jwt_extended import JWTManager,jwt_required,get_jwt,create_access_token,get_jwt_identity,create_refresh_token
 import forms
 import pandas as pd
-import datetime
-import time
-import jwt
+
 def dataframe(sql_obj: object):
     val_lst=[cash.value for cash in sql_obj]
     name_lst=[cash.name for cash in sql_obj]
@@ -39,7 +37,7 @@ class Register(MethodView):
         try:
             db.session.add(user)
             db.session.commit()
-            login_user(username)
+            login_user(user)
             #https://tedboy.github.io/flask/interface_api.response_object.html
             return redirect('/homepage/{}'.format(username))
         except SQLAlchemyError as e:
