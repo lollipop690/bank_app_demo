@@ -31,3 +31,12 @@ class SecurityForm(FlaskForm):
     ticker=StringField('Ticker: ')
     units=StringField('Units: ')
     submit=SubmitField('Submit')
+
+class EditSecForm(FlaskForm):
+    edit_id=StringField('ID to edit: ')
+    units=StringField('Change of Units: ')
+    submit=SubmitField('Submit')
+
+class DelSecForm(FlaskForm):
+    del_id=StringField('ID to delete')
+    delete=SubmitField('Delete')

@@ -1,0 +1,33 @@
+{% extends 'base.html'%}
+{% block content %}
+<h2>Cash Assets</h2>
+<p>hello {{nameID}}, this is the Cash Assets you have</p>
+<button type="button" onclick="backHomepage()">Return Home</button>
+<button type="button" onclick="Cash()">Return Cash</button></p>
+<script>
+function backHomepage() {
+  location.replace("http://127.0.0.1:5000/homepage/{{nameID}}")
+}
+function Cash() {
+  location.replace("http://127.0.0.1:5000/securities/{{nameID}}")
+}
+</script>
+<form action="/securities/{{nameID}}/edit" method="POST">
+  <input type="hidden" name="_edit" value="PUT" />
+  <p>{{form_edit.edit_id.label}}<br>
+  {{form_edit.edit_id}}</p>
+  <p>{{form_edit.units.label}}<br>
+  {{form_edit.units}}</p>
+  <p>{{form_edit.submit()}}</p>
+</form>
+<form action="/cash/{{nameID}}/edit" method="POST">
+  <input type="hidden" name="_delete" value="DEL" />
+  <p>{{form_del.del_id.label}}<br>
+  {{form_del.del_id}}</p>
+  <p>{{form_del.delete()}}</p>
+</form>
+<body>
+  <hl> Assets </hl>
+  {{table|safe}}
+</body>
+{% endblock %}

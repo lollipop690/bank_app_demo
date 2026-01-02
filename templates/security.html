@@ -3,9 +3,13 @@
 <h2>Security Assets</h2>
 <p>hello {{nameID}}, this is your Securities you have</p>
 <button type="button" onclick="backHomepage()">Return</button></p>
+<button type="button" onclick="editSec()">Edit Securities</button></p>
 <script>
 function backHomepage() {
   location.replace("http://127.0.0.1:5000/homepage/{{nameID}}")
+}
+function editSec() {
+  location.replace("http://127.0.0.1:5000/securities/{{nameID}}/edit")
 }
 </script>
 <form action="/securities/{{nameID}}" method="POST">
@@ -15,4 +19,8 @@ function backHomepage() {
   {{form.units}}</p>
   <p>{{form.submit()}}</p>
 </form>
+<body>
+  <hl> Assets </hl>
+  {{table|safe}}
+</body>
 {% endblock %}
