@@ -40,20 +40,29 @@ class SecAcc(MethodView):
             form_data=request.form
             ticker=form_data['ticker']
             check=check_validity(ticker)
-            if check:
-                try:
-                    units=float(form_data['units'])
-                except ValueError:
-                    print("Must be in numbers!")
-                    return redirect('/securities/{}'.format(current_user.username))
-                security=SecurityModel(ticker=ticker,units=units,user_id=username)
-                try:
-                    db.session.add(security)
-                    db.session.commit()
-                    print('added!')
-                    return redirect('/securities/{}'.format(current_user.username))
-                except SQLAlchemyError:
-                    print('Ticker already exist!')
+            security_existing=SecurityModel.query.filter_by(SecurityModel.user_id==username,SecurityModel.ticker==ticker)
+            if ticker==security_existing.ticker:
+                duplicate=True
+            else:
+                duplicate=False
+            if not duplicate:
+                if check:
+                    try:
+                        units=float(form_data['units'])
+                    except ValueError:
+                        print("Must be in numbers!")
+                        return redirect('/securities/{}'.format(current_user.username))
+                    security=SecurityModel(ticker=ticker,units=units,user_id=username)
+                    try:
+                        db.session.add(security)
+                        db.session.commit()
+                        print('added!')
+                        return redirect('/securities/{}'.format(current_user.username))
+                    except SQLAlchemyError:
+                        print('Ticker already exist!')
+                        return redirect('/securities/{}'.format(current_user.username))
+                else:
+                    print('no duplicates allowed!')
                     return redirect('/securities/{}'.format(current_user.username))
             else:
                 print('Invalid Ticker')

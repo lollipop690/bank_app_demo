@@ -44,7 +44,8 @@ class CashAcc(MethodView):
                 try:
                     value=float(form_data['value'])
                 except ValueError:
-                    return "Input numbers only!"
+                    print('input numbers only!')
+                    return redirect('/cash/{}'.format(username)) #redirect back to cash
                 cash=CashModel(name=name,value=value,user_id=username)
                 try:
                     db.session.add(cash)
