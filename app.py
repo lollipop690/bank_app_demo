@@ -28,7 +28,7 @@ def create_app(db_url=None):
     app.config['OPENAPI_URL_PREFIX']='/' #tell openapi where root of api is
     app.config['OPENAPI_SWAGGER_UI_PATH']='/swagger-ui' #use swagger UI for api documentation 
     app.config['OPENAPI_SWAGGER_UI_URL']='https://cdn.jsdelivr.net/npm/swagger-ui-dist/' #import the code for the documentation here
-    app.config['SQLALCHEMY_DATABASE_URI']=db_url or os.getenv("DATABASE_URL","sqlite:///bank.db") #use environment variable so can migrate database later
+    app.config['SQLALCHEMY_DATABASE_URI']=db_url or os.getenv("DATABASE_URL","sqlite:///C:\\Users\\kpkjc\\Documents\\PYTHON\\Notes\\Programs\\Lessons\\API\\instance\\bank.db") #use environment variable so can migrate database later
     #os.getenv will try to use 'database_url' for environment variable if available else will just use sqlite variables
     #using environment variable is easy way to store arbituary secrets, not good idea to store database connections strings in code
     
