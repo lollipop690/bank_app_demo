@@ -106,6 +106,11 @@ class CashAcc(MethodView):
                 new_name=form_data['name']
                 new_value=form_data['value']
                 
+                #check if name already exist
+                if CashModel.query.filter(CashModel.name==new_name,CashModel.user_id==username).first():
+                    print('No repeat values')
+                    return redirect('/cash/{}/edit'.format(current_user.username))
+
                 #new cash name
                 if new_name=='':
                     new_name=original_name
