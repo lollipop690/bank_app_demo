@@ -40,8 +40,8 @@ class SecAcc(MethodView):
             form_data=request.form
             ticker=form_data['ticker']
             check=check_validity(ticker)
-            security_existing=SecurityModel.query.filter_by(SecurityModel.user_id==username,SecurityModel.ticker==ticker)
-            if ticker==security_existing.ticker:
+            security_existing=SecurityModel.query.filter(SecurityModel.user_id==username,SecurityModel.ticker==ticker).first()
+            if security_existing:
                 duplicate=True
             else:
                 duplicate=False
@@ -59,13 +59,13 @@ class SecAcc(MethodView):
                         print('added!')
                         return redirect('/securities/{}'.format(current_user.username))
                     except SQLAlchemyError:
-                        print('Ticker already exist!')
+                        print('Error!')
                         return redirect('/securities/{}'.format(current_user.username))
                 else:
-                    print('no duplicates allowed!')
+                    print('Invalid ticker!')
                     return redirect('/securities/{}'.format(current_user.username))
             else:
-                print('Invalid Ticker')
+                print('No duplicates')
                 return redirect('/securities/{}'.format(current_user.username))
         else:
             return redirect('/securities/{}'.format(current_user.username))
@@ -88,7 +88,7 @@ class EditSecAcc(MethodView):
             df=pd.DataFrame(data_dict)
             df_html=df.to_html(classes='table',index=False)
             
-            return render_template('edit_securities.html',nameID=username,edit_form=edit_form,del_form=del_form,table=df_html)
+            return render_template('edit_securities.html',nameID=username,form_edit=edit_form,form_del=del_form,table=df_html)
         else:
             return redirect('/securities/{}/edit'.format(current_user.username))
     @login_required
@@ -108,7 +108,7 @@ class EditSecAcc(MethodView):
             form_data=request.form
             sec_id=form_data['edit_id']
             new_units=form_data['units']
-            security=SecurityModel.query.filter_by(SecurityModel.id==sec_id,SecurityModel.user_id==username).first()
+            security=SecurityModel.query.filter(SecurityModel.id==sec_id,SecurityModel.user_id==username).first()
             
             if security:
                 original_units=security.units
@@ -142,7 +142,7 @@ class EditSecAcc(MethodView):
         if current_user.username==username:
             form_data=request.form
             sec_id=form_data['del_id']
-            security=SecurityModel.query.filter_by(SecurityModel.id==sec_id,SecurityModel.user_id==username).first()
+            security=SecurityModel.query.filter(SecurityModel.id==sec_id,SecurityModel.user_id==username).first()
             if security:
                 try:
                     db.session.delete(security)
