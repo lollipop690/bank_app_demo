@@ -46,12 +46,6 @@ def create_app(db_url=None):
     #bootstrap = Bootstrap5(app)
     # Flask-WTF requires this line
     #csrf = CSRFProtect(app)
-    '''
-    If CSRF protection is enabled in the Flask application,
-    but the form does not include a CSRF token, 
-    the server will reject the request. Include a CSRF token in the form, 
-    typically using {{ form.csrf_token }} if using Flask-WTF or a similar library.
-    '''
 
 
     ###JWT tokens are not required for session based login only, only used API auths
@@ -76,10 +70,3 @@ def create_app(db_url=None):
     return app
 
 
-"""
-Flow of @login_manager.user_loader:
-1. '/login' route, will validate for user, if user exist, login_user(user_object) will store the UserID pri key in session
-2. @login_manager.user_loader decorator will register a callback to load UserID pri key, called automatically on every request to protected endpoints
-3. login_user(user_object) will call @user_loader to load user object as current_user 
-4. in routes that are decorated with @login_required, it automatically checks if current_user.is_authenticated is True
-"""
