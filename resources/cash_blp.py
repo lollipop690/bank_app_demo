@@ -25,7 +25,7 @@ class CashAcc(MethodView):
             data_dict={'ID':cash_id,'Account Name':cash_name,'Value':cash_value}
             df=pd.DataFrame(data_dict)
             df_html=df.to_html(classes='table',index=False)
-            return render_template('cash.html',nameID=username,form=form,table=df_html)
+            return render_template('cash.html',nameID=username,form=form,table=df_html) #example of coupled api, using of server-side rendering
         else:
             return redirect('/cash/{}'.format(current_user.username))
     @login_required

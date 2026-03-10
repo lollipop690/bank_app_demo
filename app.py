@@ -52,6 +52,8 @@ def create_app(db_url=None):
     
     with app.app_context(): #will create tables before first request if it dont already exist
         import models
+        from models.security_model import SecurityModel
+        #get all the tickers available upon
     #sqlalchemy knows what tables to create based on the models imported
         db.create_all()
     
