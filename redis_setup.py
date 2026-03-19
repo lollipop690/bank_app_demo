@@ -15,4 +15,5 @@ def _on_msg(msg):
     ticker = msg.get('id')
     price = msg.get('price')
     if ticker and price:
+        #r.set(key,value)
         r.set("price: {}".format(ticker),price)
