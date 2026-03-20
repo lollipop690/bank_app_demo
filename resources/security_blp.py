@@ -10,6 +10,7 @@ from flask_login import login_required,current_user
 import forms
 from yfinance_fn import check_validity
 import pandas as pd
+from redis_setup import start_stream
 
 blp=Blueprint("security",__name__,'security instruments')
 
@@ -56,6 +57,7 @@ class SecAcc(MethodView):
                     try:
                         db.session.add(security)
                         db.session.commit()
+                        start_stream([ticker])
                         print('added!')
                         return redirect('/securities/{}'.format(current_user.username))
                     except SQLAlchemyError:

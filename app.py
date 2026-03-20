@@ -10,6 +10,7 @@ from resources.user_blp import blp as UserBLP
 from resources.cash_blp import blp as CashBLP
 from resources.security_blp import blp as SecurityBLP
 from db import db
+from redis_setup import start_stream
 
 import os
 
@@ -22,7 +23,7 @@ def create_app(db_url=None):
     app.config['SECRET_KEY']='keane123'
     app.config['PROPAGATE_EXCEPTIONS']=True #if there is exception that occurs hidden in extension of flask, propagate it to flask app so we can see it
     #flask smorest config
-    app.config['API_TITLE']='Stores REST API' #title to be in documentation
+    app.config['API_TITLE']='Bank REST API' #title to be in documentation
     app.config['API_VERSION']='v1' #version of API we are working on
     app.config['OPENAPI_VERSION']='3.0.3' #openapi is standard for api documentation, tell flask smorest to use 3.0.3
     app.config['OPENAPI_URL_PREFIX']='/' #tell openapi where root of api is
@@ -54,7 +55,9 @@ def create_app(db_url=None):
         import models
         from models.security_model import SecurityModel
         #get all the tickers available upon
-    #sqlalchemy knows what tables to create based on the models imported
+        all_tickers = [s.ticker for s in SecurityModel.query.all()]
+        start_stream(all_tickers)
+        #sqlalchemy knows what tables to create based on the models imported
         db.create_all()
     
     #does not need jwt token because login_manager uses session based authentication
