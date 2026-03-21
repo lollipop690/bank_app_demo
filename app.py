@@ -10,9 +10,10 @@ from resources.user_blp import blp as UserBLP
 from resources.cash_blp import blp as CashBLP
 from resources.security_blp import blp as SecurityBLP
 from db import db
-from redis_setup import start_stream
+from redis_setup import start_stream, redis_reset
 
 import os
+import atexit
 
 ###Register blueprints with API
 
@@ -59,6 +60,8 @@ def create_app(db_url=None):
         start_stream(all_tickers)
         #sqlalchemy knows what tables to create based on the models imported
         db.create_all()
+    
+    atexit.register(redis_reset) #when closing app, reset the db
     
     #does not need jwt token because login_manager uses session based authentication
     from models.user_model import UserModel

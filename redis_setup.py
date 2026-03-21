@@ -34,3 +34,6 @@ def start_stream(tickers: list): #first called when starting up the app, subsequ
     _ws_thread = threading.Thread(target=_run,daemon=True)
     _ws_thread.start()
         
+def redis_reset():
+    print("Redis db resetting...")
+    r.flushdb(asynchronous=True) #do not use .flushall() because it clears all databases in redis server.
