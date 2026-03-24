@@ -13,7 +13,6 @@ from db import db
 from redis_setup import start_stream, redis_reset
 
 import os
-import atexit
 
 ###Register blueprints with API
 
@@ -54,15 +53,19 @@ def create_app(db_url=None):
     
     with app.app_context(): #will create tables before first request if it dont already exist
         import models
+        import redis
         from models.security_model import SecurityModel
         #get all the tickers available upon
         all_tickers = [s.ticker for s in SecurityModel.query.all()]
-        start_stream(all_tickers)
+        try:
+            start_stream(all_tickers)
+        except redis.ConnectionError:
+            print("Redis connection error")
+
         #sqlalchemy knows what tables to create based on the models imported
         db.create_all()
     
-    atexit.register(redis_reset) #when closing app, reset the db
-    
+
     #does not need jwt token because login_manager uses session based authentication
     from models.user_model import UserModel
     @login_manager.user_loader

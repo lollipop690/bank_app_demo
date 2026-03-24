@@ -1,23 +1,42 @@
 import redis
 import yfinance as yf
 import threading
+import atexit
+
+def redis_reset():
+    print("Redis db resetting...")
+    r.flushdb(asynchronous=True) #do not use .flushall() because it clears all databases in redis server.
 
 #this program running in background on seperate track
-r = redis.Redis(host='localhost',port=6379,db=0,decode_responses=True) #decode_responses=True is to return decoded responses
-
+try:
+    r = redis.Redis(host='localhost',port=6379,db=0,decode_responses=True) #decode_responses=True is to return decoded responses
+    #Redis() does not self-start up
+    r.ping() #detects if it has error then handles cleanly, so atexit.register is never executed
+    
+    atexit.register(redis_reset) #when closing app, reset the db
+except redis.ConnectionError:
+    print("Error connecting to redis data base.")
 _ws_thread = None
 _subscribed = set() #should be empty when first start up. will have to start_stream to get the first batch of data in
 _lock = threading.Lock()
 
 def get_prices_for_tickers(tickers: list):
-    return {t: r.get("price:{}".format(t)) for t in tickers}
+    try:
+        return {t: r.get("price:{}".format(t)) for t in tickers}
+    except redis.ConnectionError:
+        print("Error reading from redis data base.")
+        return None
 
 def _on_msg(msg): #handle incoming data from websocket
     ticker = msg.get('id')
     price = msg.get('price')
-    if ticker and price:
-        #r.set(key,value)
-        r.set("price:{}".format(ticker),price)
+    try:
+        if ticker and price:
+            #r.set(key,value)
+            r.set("price:{}".format(ticker),price)
+    except redis.ConnectionError:
+        print("Error writing to redis db.")
+        return None
 
 def start_stream(tickers: list): #first called when starting up the app, subsequently called again if update tickers
     global _ws_thread, _subscribed
@@ -34,6 +53,3 @@ def start_stream(tickers: list): #first called when starting up the app, subsequ
     _ws_thread = threading.Thread(target=_run,daemon=True)
     _ws_thread.start()
         
-def redis_reset():
-    print("Redis db resetting...")
-    r.flushdb(asynchronous=True) #do not use .flushall() because it clears all databases in redis server.
