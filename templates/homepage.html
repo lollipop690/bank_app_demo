@@ -22,4 +22,80 @@ function LogOut() {
   location.replace("http://127.0.0.1:5000/logout")
 }
 </script>
+
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in rows %}
+    <tr>
+      <td>{{ row.type }}</td>
+      <td id="val-{{ row.type }}">
+        {% if row.val is not none %}
+          {{ row.val }}
+        {% else %}
+          —          {# JS fills this #}
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  <tfoot>
+    <tr>
+      <td><strong>Total</strong></td>
+      <td id="val-Total">—</td>   <!-- cash + securities combined -->
+    </tr>
+  </tfoot>
+</table>
+
+
+<script>
+  const units   = {{ units_map | tojson }};
+  const cash    = {{ rows[0].val | tojson }};   // static, from Flask
+  let   prices  = {};
+
+  async function streamTotal() {
+    const response = await fetch('/securities/{{ nameID }}/stream');
+    const reader   = response.body.getReader();
+    const decoder  = new TextDecoder();
+    let   buffer   = '';
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
+
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        try {
+          Object.assign(prices, JSON.parse(line));
+
+          // Sum securities value
+          const secTotal = Object.entries(prices).reduce((sum, [ticker, price]) => {
+            return sum + (units[ticker] || 0) * parseFloat(price);
+          }, 0);
+
+          // Update cells
+          document.getElementById('val-Securities').textContent = secTotal.toFixed(2);
+          document.getElementById('val-Total').textContent      = (cash + secTotal).toFixed(2);
+
+        } catch (e) {
+          console.warn('Parse error:', e);
+        }
+      }
+    }
+  }
+
+  streamTotal();
+</script>
+
+
 {% endblock %}

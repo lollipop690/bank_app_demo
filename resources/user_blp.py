@@ -72,15 +72,23 @@ class Login(MethodView):
 class Homepage(MethodView):
     @login_required
     def get(self,username):
-        print(current_user.is_authenticated)
-        print(current_user.username)
-        print(type(current_user))
         if current_user.username==username:
             user_data=UserModel.query.filter(UserModel.username==username).first()
             user_cash=user_data.cash #gets the related rows from the cash table
-            user_cash_dict=dataframe(user_cash)
-            print(user_cash_dict)
-            return render_template('homepage.html',nameID=username)
+
+            val = 0
+            for cash in user_cash:
+                val += cash.value
+
+            # Get securities holdings for units_map
+            sec_data  = SecurityModel.query.filter(SecurityModel.user_id == username)
+            units_map = {sec.ticker: sec.units for sec in sec_data}
+
+            rows = [
+                {"type": "Cash",       "val": val},
+                {"type": "Securities", "val": None},   # None = JS will fill this live
+                ]
+            return render_template('homepage.html',nameID=username,rows=rows,units_map=units_map)
         else:
             return redirect('/homepage/{}'.format(current_user.username)) #only redirect to your own account page
 
