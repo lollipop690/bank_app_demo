@@ -1,4 +1,4 @@
-from flask import Flask,request,render_template,url_for,redirect
+from flask import Flask,request,render_template,url_for,redirect,Response,stream_with_context
 from flask.views import MethodView
 from models.user_model import UserModel
 from models.security_model import SecurityModel
@@ -10,8 +10,11 @@ from flask_login import login_required,current_user
 import forms
 from yfinance_fn import check_validity
 import pandas as pd
-from redis_setup import start_stream
+from redis_setup import start_stream,get_prices_for_tickers
+import json
 import redis
+import time
+import requests as rq
 
 blp=Blueprint("security",__name__,'security instruments')
 
@@ -28,11 +31,13 @@ class SecAcc(MethodView):
             sec_ticker=[sec.ticker for sec in sec_data]
             sec_units=[sec.units for sec in sec_data]
             sec_id=[sec.id for sec in sec_data]
-            data_dict={'ID':sec_id,'Account Name':sec_ticker,'Value':sec_units}
-            df=pd.DataFrame(data_dict)
-            df_html=df.to_html(classes='table',index=False)
+    
+            rows = [
+                {'id': i, 'ticker': t, 'units': u}
+                for i, t, u in zip(sec_id, sec_ticker, sec_units)
+            ]
             
-            return render_template('security.html',nameID=username,form=form,table=df_html)
+            return render_template('security.html',nameID=username,form=form,rows=rows)
         else:
             return redirect('/securities/{}'.format(current_user.username))
     
@@ -163,3 +168,23 @@ class EditSecAcc(MethodView):
         else:
             return redirect('/securities/{}/edit'.format(current_user.username))
         
+@blp.route('/securities/<username>/stream',methods=['GET'])
+class StreamPrices(MethodView):
+    @login_required
+    def get(self,username):
+        if current_user.username==username:
+            sec_data = SecurityModel.query.filter(SecurityModel.user_id==username) #get all rows with this username
+            #no possiblity for duplicate tickers for each username because replicates are not allowed to be added
+            tickers = [sec.ticker for sec in sec_data]
+
+            def stream_prices():
+                while True:
+                    prices = get_prices_for_tickers(tickers)
+                    #yield f"data: {json.dumps(prices)}\n\n"
+                    yield json.dumps(prices) + '\n' #returns an iterable of objects
+                    time.sleep(1.5)
+            
+            return Response(stream_with_context(stream_prices()),mimetype = 'text/event-stream')
+
+        else:
+            return redirect('/securities/{}/stream'.format(current_user.username))

@@ -10,7 +10,7 @@ from resources.user_blp import blp as UserBLP
 from resources.cash_blp import blp as CashBLP
 from resources.security_blp import blp as SecurityBLP
 from db import db
-from redis_setup import start_stream, redis_reset
+from redis_setup import start_stream
 
 import os
 

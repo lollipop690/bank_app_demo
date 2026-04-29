@@ -3,17 +3,20 @@ import yfinance as yf
 import threading
 import atexit
 
+#do not flush db so can keep old data 
+'''
 def redis_reset():
     print("Redis db resetting...")
     r.flushdb(asynchronous=True) #do not use .flushall() because it clears all databases in redis server.
+'''
 
-#this program running in background on seperate track
+#this program running in background on seperate thread
 try:
     r = redis.Redis(host='localhost',port=6379,db=0,decode_responses=True) #decode_responses=True is to return decoded responses
     #Redis() does not self-start up
     r.ping() #detects if it has error then handles cleanly, so atexit.register is never executed
     
-    atexit.register(redis_reset) #when closing app, reset the db
+    #atexit.register(redis_reset) #when closing app, reset the db
 except redis.ConnectionError:
     print("Error connecting to redis data base.")
 _ws_thread = None

@@ -19,8 +19,69 @@ function editSec() {
   {{form.units}}</p>
   <p>{{form.submit()}}</p>
 </form>
-<body>
-  <hl> Assets </hl>
-  {{table|safe}}
-</body>
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Ticker</th>
+      <th>Units</th>
+      <th>Price</th>
+      <th>Total Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in rows %}
+    <tr>
+      <td>{{ row.id }}</td>
+      <td>{{ row.ticker }}</td>
+      <td>{{ row.units }}</td>
+      <td id="price-{{ row.ticker }}">—</td>
+      <td id="value-{{ row.ticker }}">—</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+<script>
+  //@ts-nocheck
+  const units = {
+    {% for row in rows %}
+      "{{ row.ticker }}": {{ row.units }},
+    {% endfor %}
+  };
+
+  async function streamPrices() {
+    const response = await fetch('/securities/{{ nameID }}/stream');
+    const reader   = response.body.getReader(); 
+    const decoder  = new TextDecoder();
+    let   buffer   = '';
+
+    while (true) {
+      const { value, done } = await reader.read(); //this is to read the json object returned from the endpoint
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop();   // keep incomplete trailing chunk
+
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        try {
+          const prices = JSON.parse(line);
+          for (const [ticker, price] of Object.entries(prices)) {
+            const priceEl = document.getElementById(`price-${ticker}`);
+            const valueEl = document.getElementById(`value-${ticker}`);
+            if (priceEl) priceEl.textContent = parseFloat(price).toFixed(2);
+            if (valueEl) valueEl.textContent = (units[ticker] * parseFloat(price)).toFixed(2);
+          }
+        } catch (e) {
+          console.warn('Parse error:', e);
+        }
+      }
+    }
+  }
+
+  streamPrices();
+</script>
 {% endblock %}
