@@ -44,7 +44,7 @@ def _on_msg(msg): #handle incoming data from websocket
 def start_stream(tickers: list): #first called when starting up the app, subsequently called again if update tickers
     global _ws_thread, _subscribed
     with _lock:
-        new = set(tickers) - _subscribed 
+        new = set(tickers) - _subscribed #restart the stream thread if needed
         if not new:
             return 
         _subscribed.update(new)
